@@ -6,7 +6,8 @@ A coverage path planning algorithm that combines multiple search algorithms to f
 
 This project was built and was run on Ubuntu 20.04 LTS. The following dependencies/packages are required:
 
-- Python3
+- Python3 (3.8.10 used)
+    - numpy (v1.17.4 used)
 
 # Install
 
@@ -20,7 +21,9 @@ https://github.com/rodriguesrenato/coverage-path-planning.git
 
 The coverage tests can be executed by running the following command in the terminal, on the `coverage-path-planning` folder:
 
+```bash
 python3 coverage_test.py
+```
 
 # Challenge
 
