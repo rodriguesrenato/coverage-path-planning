@@ -1,51 +1,40 @@
 import numpy as np
-from coverage_planner2 import CoveragePlanner, PlannerStatus
+from coverage_planner import CoveragePlanner, HeuristicType
 
 # Load map
-
-
 def load_map(map_name):
     with open("maps/{}.npy".format(map_name), 'rb') as f:
         return np.load(f)
 
+# Create a list for dynamic compute the best coverage heuristic for each map
+maps = ["map1","map2","map3"]
+cp_heuristics = [HeuristicType.VERTICAL,
+                 HeuristicType.HORIZONTAL, HeuristicType.CHEBYSHEV, HeuristicType.MANHATTAN]
 
-map_name = "map0"
 
-target_map = load_map(map_name)
+for map_name in maps:
+    compare_tb = []
 
-print("map to be tested: {}".format(map_name))
+    target_map = load_map(map_name)
+    cp = CoveragePlanner(target_map)
+    cp.set_debug_level(0)
 
-cp = CoveragePlanner(target_map)
-# cp.PrintMap(target_map)
-print("\nStart point: {}".format(cp.init))
-cp.start()
+    for heuristic in cp_heuristics:
+        print("\n\nIteration[map:{}, cp:{}]".format(map_name,heuristic.name))
+        cp.start(cp_heuristic=heuristic)
+        cp.compute()
+        cp.show_results()
+        res = cp.result()
+        res.insert(0, heuristic.name)
+        compare_tb.append(res)
 
-while cp.compute():
-    print("[main] while compute iteration")
-# c = [0, 0, 0, 0]
-# i = 0
-# Pack the standard answer
-# [Success?, total_cost, trajectory, final_coverage_grid]
-# trajectory = [value , x, y, orientation, action_taken_on_this_position]
+    # Sort by number of steps
+    compare_tb.sort(key=lambda x: x[2])
 
-# calculate the cost for each possible start orientation and heuristic
-# c[i] = cp.coverage_search(cp.init,i)
-# res = cp.coverage_search(cp.init, i, -1)
-# trajectory = res[2]
-# cp.coverage_grid = res[3]
-# # status,trajectory,policy
-# if not res[0]:
-#     last_coord = [trajectory[-1][1], trajectory[-1][2]]
-#     cp.a_star_search_closest_unvisited(last_coord, trajectory[-1][3])
+    print("\nmap tested: {}".format(map_name))
+    print("CP_Heur.\tFound?\tSteps\tCost")
+    for c in compare_tb:
+        print("{}\t{}\t{}\t{:.2f}".format(c[0],c[1],c[2],c[3]))
 
-# print("Started at {} heading {}: Total cost = {}".format(
-#     cp.init, i, trajectory[-1][0]))
-# print("\ntrajectory:")
-# cp.PrintMap(trajectory)
-
-# print("\npolicy:")
-# cp.PrintMap(policy)
-
-# a_star = cp.a_star_search(cp.init,[0,9])
-
-# print(cp.CreateHorizontalHeuristic(cp.init))
+    print("\nList of coordinates of the best path:")
+    print(compare_tb[0][5])
