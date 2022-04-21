@@ -36,5 +36,5 @@ for map_name in maps:
     for c in compare_tb:
         print("{}\t{}\t{}\t{:.2f}".format(c[0],c[1],c[2],c[3]))
 
-    print("\nList of coordinates of the best path:")
+    print("\nList of coordinates of the best pathÇ [map:{}, cp:{}]".format(map_name,heuristic.name))
     print(compare_tb[0][5])

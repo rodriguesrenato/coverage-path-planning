@@ -1,18 +1,14 @@
 import numpy as np
 import copy
 from enum import Enum, IntEnum, auto
-np.set_printoptions(precision=2)
 
 
 class PlannerStatus(Enum):
-    RESIGN = auto()
-    SEARCH = auto()
-    FOUND = auto()
-    NOT_FOUND = auto()
-    START = auto()
+    STANDBY = auto()
     COVERAGE_SEARCH = auto()
     NEARST_UNVISITED_SEARCH = auto()
-    STANDBY = auto()
+    FOUND = auto()
+    NOT_FOUND = auto()
 
 
 class HeuristicType(Enum):
@@ -20,7 +16,6 @@ class HeuristicType(Enum):
     CHEBYSHEV = auto()
     VERTICAL = auto()
     HORIZONTAL = auto()
-    BEST = auto()  # TBD
 
 
 class CoveragePlanner():
@@ -37,7 +32,7 @@ class CoveragePlanner():
         # Readable description['up', 'left', 'down', 'right']
         self.movement_name = ['^', '<', 'v', '>']
 
-        # Possible actions  performed by the robot
+        # Possible actions performed by the robot
         self.action = [-1, 0, 1, 2]
         self.action_name = ['R', '#', 'L', 'B']  # Right,Forward,Left,Backwards
         self.action_cost = [.2, .1, .2, .4]
@@ -128,9 +123,6 @@ class CoveragePlanner():
             # If no path was found, just finish searching
             else:
                 self.state_ = PlannerStatus.NOT_FOUND
-
-        elif self.state_ == PlannerStatus.FOUND or self.state_ == PlannerStatus.NOT_FOUND:
-            self.show_results()  # TODO: check if necessary
 
         else:
             self.printd("compute_non_blocking",
@@ -425,7 +417,6 @@ class CoveragePlanner():
         return heuristic
 
     # Return the vertical heuristic at given target point
-
     def create_vertical_heuristic(self, target_point):
         heuristic = np.zeros_like(self.map_grid)
         for x in range(len(heuristic)):
