@@ -31,31 +31,23 @@ Given a NxM matrix, where free areas are marked with 0, obstacles with 1 and the
 
 The answer should list the coordinates of the squares it goes through in order from the starting point, essentially the path to be taken by the robot. In addition, the code should include a simple visualisation to verify the results. A file containing the three areas the algorithm must be able to cope with is provided.
 
-# Stategy
-
-- Understand the problem
-- Check for previous solution that I've worked with
-    - Udacity nanodegree programs: A* search, dynamic programming, path planning on Self driving Cars.
-    - Academic papers of Coverage Path Planning (on `docs` folder)
-- Draf the first solution diagram and strategies
-- Define first standards (variables, class structure, functions responses)
-- Prototype and test individual approaches
-- Evaluate results
-- Build the main code structure on a finite state machine
-- Prototype, test and evaluation
-- code clean and optmization after a successfull result
-- optimize
-- Improve documentation
-
 # Solution
 
 The coverage planning solution was developed in the `CoveragePlanner` class, supported by two Enum classes `PlannerStatus` and `HeuristicType`
 
-A finite state machine approach was chosen to handle switching between search algorithm and make solution more modular for future improvements.
+A finite state machine approach was chosen to handle switching between search algorithm and make solution more modular for future improvements. It runs until find or not a path to complete coverage the map.
 
-The map given was previously pre processed into a numpy array, which is loaded at the test begining. A CoverageSearch class is instantiate by passing the map and it will hold the informations computed by the search.
+![Finite Stae Machine](images/fsm.png)
+
+The map given was previously pre processed into a numpy array, which is loaded at the test begining. 
+
+![Map](images/map_grid.png)
+
+A CoverageSearch class is instantiate by passing the map and it will hold the informations computed by the search.
 
 A simple model of movement between position was chosen to guide the development of search algorithms:
+
+![Movements and Actions](images/mov_actions.png)
 
 - Each grid cell is a position
 - The `robot` can be at a single cell,on a specific orientation: `x`,`y` and `orientation`
@@ -94,6 +86,8 @@ The trajectory is a list of:
 4. Orientation (Based on movement actions)
 5. Action that was done **before** arrive at this position
 6. Action that will be done **after** arrive at this position 
+
+The accumulated trajectory is stored on a class attribute, so that it can be used during or after the search.
 
 ## Policy Map
 
@@ -301,6 +295,8 @@ CoveragePlanner()
 
 ## PlannerStatus
 
+An Enum class that has all the Finite State Machine states.
+
 ```python
 class PlannerStatus(Enum):
     STANDBY = auto()
@@ -312,6 +308,8 @@ class PlannerStatus(Enum):
 
 ## HeuristicType
 
+An Enum class that holds the implemented heuristic types.
+
 ```python
 class HeuristicType(Enum):
     MANHATTAN = auto()
@@ -319,6 +317,23 @@ class HeuristicType(Enum):
     VERTICAL = auto()
     HORIZONTAL = auto()
 ```
+
+# Stategy
+
+- Understand the problem
+- Check for previous solution that I've worked with
+    - Udacity nanodegree programs: A* search, dynamic programming, path planning on Self driving Cars.
+    - Academic papers of Coverage Path Planning (on `docs` folder)
+- Draf the first solution diagram and strategies
+- Define first standards (variables, class structure, functions responses)
+- Prototype and test individual approaches
+- Evaluate results
+- Build the main code structure on a finite state machine
+- Prototype, test and evaluation
+- code clean and optmization after a successfull result
+- optimize
+- Improve documentation
+
 # Next Features to be Implemented
 
 - A function to read the raw map given
