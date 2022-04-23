@@ -166,7 +166,7 @@ class CoveragePlanner():
         v = 0
 
         # Fill the initial coord in the iteration list
-        trajectory = [[v, x, y, o, None, None]]
+        trajectory = [[v, x, y, o, None, None,self.state_]]
 
         complete_coverage = False
         resign = False
@@ -197,7 +197,7 @@ class CoveragePlanner():
                         if closed[x2][y2] == 0 and self.map_grid[x2][y2] == 0:
                             v2 = v + self.action_cost[a] + heuristic[x2][y2]
                             possible_next_coords.append(
-                                [v2, x2, y2, o2, a, None])
+                                [v2, x2, y2, o2, a, None,self.state_])
 
                 # If there isn any possible next position, stop searching
                 if len(possible_next_coords) == 0:
@@ -335,7 +335,7 @@ class CoveragePlanner():
             x = x2
             y = y2
 
-            trajectory = [[0, x, y, orientation[x][y], None, None, "EA*"]]
+            trajectory = [[0, x, y, orientation[x][y], None, None, self.state_]]
             orientation[initial_pos[0]][initial_pos[1]] = initial_pos[2]
 
             # Go backwards from the unvisited position founded to this search inital position
@@ -353,7 +353,7 @@ class CoveragePlanner():
                 trajectory[-1][4] = a
 
                 # Add the path predecessor position
-                trajectory.append([0, x0, y0, o0, a0, a])
+                trajectory.append([0, x0, y0, o0, a0, a, self.state_])
                 # trajectory.append([0, x0, y0, o0, a0, a, self.action_name[a], self.movement_name[orientation[x][y]]])
 
                 # update x and y for next iteration
@@ -522,8 +522,8 @@ class CoveragePlanner():
         print("{}\t{}\t{}\t{}\t{}\t{}".format(
             "l_cost", "x", "y", "orient.", "act_in", "act_next"))
         for t in trajectory:
-            print("{:.2f}\t{}\t{}\t{}\t{}\t{}".format(
-                t[0], t[1], t[2], t[3], t[4], t[5]))
+            print("{:.2f}\t{}\t{}\t{}\t{}\t{}\t{}".format(
+                t[0], t[1], t[2], t[3], t[4], t[5],t[6].name))
 
     # Print a given map grid with regular column width
     def print_map(self, m):
