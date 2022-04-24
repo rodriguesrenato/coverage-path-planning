@@ -96,6 +96,7 @@ class CoveragePlanner():
             # Check if path was successfully found. If not, try to find the closest unvisited position
             if res[0]:
                 self.state_ = PlannerStatus.FOUND
+                self.current_trajectory[-1][6] = PlannerStatus.FOUND
             else:
                 self.state_ = PlannerStatus.NEARST_UNVISITED_SEARCH
                 searching = True
@@ -123,6 +124,8 @@ class CoveragePlanner():
             # If no path was found, just finish searching
             else:
                 self.state_ = PlannerStatus.NOT_FOUND
+                if len(self.current_trajectory) > 0:
+                    self.current_trajectory[-1][6] = PlannerStatus.NOT_FOUND
 
         else:
             self.printd("compute_non_blocking",
@@ -240,7 +243,7 @@ class CoveragePlanner():
             not resign, total_steps, total_cost), 1)
 
         # Pack the standard response
-        # trajectory:   [value , x, y, orientation, action_performed_to_get_here, next_action]
+        # trajectory:   [value , x, y, orientation, action_performed_to_get_here, next_action, current_state_]
         # res:          [Success?, trajectory, final_coverage_grid,total_cost_actions,total_steps]
         res = [not resign, trajectory, closed, total_cost, total_steps]
 
@@ -382,7 +385,7 @@ class CoveragePlanner():
             found, total_steps, total_cost), 1)
 
         # Pack the standard response
-        # trajectory:   [value , x, y, orientation, action_performed_to_get_here, next_action]
+        # trajectory:   [value , x, y, orientation, action_performed_to_get_here, next_action, current_state_]
         # res:          [Success?, trajectory, final_coverage_grid,total_cost_actions,total_steps]
         res = [found, trajectory, None, total_cost, total_steps]
         return res
