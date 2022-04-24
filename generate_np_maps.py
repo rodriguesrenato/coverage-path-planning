@@ -1,6 +1,6 @@
 import numpy as np
 
-maps = [[],[],[],[]]
+maps = [[] for i in range(5)]
 
 maps[0] = [[1, 1, 0, 0, 0, 0, 0, 0, 0, 0],
            [1, 1, 0, 0, 0, 0, 0, 0, 0, 0],
@@ -66,14 +66,31 @@ maps[3] = [[0, 0, 0, 0, 0],
            [0, 0, 0, 0, 0],
            [0, 2, 0, 0, 0]]
 
-for i in range(0,4):
+# name: map4
+# type: matrix
+# rows: 10
+# columns: 10
+maps[4] = [[1, 1, 0, 0, 0, 0, 0, 0, 0, 0],
+           [1, 1, 0, 0, 0, 0, 0, 1, 1, 1],
+           [0, 0, 0, 0, 0, 0, 0, 1, 0, 0],
+           [0, 0, 0, 0, 0, 0, 0, 1, 0, 0],
+           [0, 0, 0, 0, 0, 0, 1, 1, 1, 1],
+           [0, 0, 0, 0, 0, 0, 1, 1, 1, 1],
+           [0, 0, 0, 0, 0, 0, 0, 1, 0, 0],
+           [0, 0, 0, 0, 0, 0, 0, 1, 0, 0],
+           [0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+           [2, 0, 0, 0, 0, 0, 0, 0, 0, 0]]
+
+for i in range(0,len(maps)):
     print("i: {}".format(i))
-    map1 = np.array(maps[i])
+
+    # Convert to numpy array and save to file
+    m = np.array(maps[i])
     with open("maps/map{}.npy".format(i), 'wb') as f:
-        np.save(f, map1)
+        np.save(f, m)
 
     m = None
-
+    # Load the map from file and print it
     with open("maps/map{}.npy".format(i), 'rb') as f:
         m = np.load(f)
 
