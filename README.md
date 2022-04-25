@@ -93,6 +93,10 @@ The trajectory is a list of:
 
 The accumulated trajectory is stored on a class attribute, so that it can be used during or after the search.
 
+The heuristic functions, used by each search algorithm, are described below:
+
+![Map4](images/heuristics.png)
+
 ## Policy Map
 
 The policy maps is the *readable* map containing the given trajectory.
