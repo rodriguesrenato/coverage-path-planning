@@ -76,8 +76,8 @@ A simple model of movement between position was chosen to guide the development 
 Two search algorithm are implemented: "coverage search" and "closest unvisited search", based on "A* search" algorithm. Both algorithm return a standarized message containing:
 
 1. If search completes the full coverage of the map.
-3. The trajectory portion found by the current searchY .
-4. The resulted coverage map, which is a matrix that comprises all visisted positions and obstacles at the current moment.
+3. The trajectory portion found by the current search.
+4. The resulted coverage map, which is a matrix that comprises all visited positions and obstacles at the current moment.
 4. Total cost of the tracjectory found.
 5. Total steps done on the tracjectory found.
 
