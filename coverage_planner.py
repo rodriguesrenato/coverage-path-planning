@@ -196,8 +196,11 @@ class CoveragePlanner():
                     x2 = x + self.movement[o2][0]
                     y2 = y + self.movement[o2][1]
 
+                    # Check if it is out of the map boundaries
                     if x2 >= 0 and x2 < len(self.map_grid) and y2 >= 0 and y2 < len(self.map_grid[0]):
+                        # Check if this position was already visited or if it is a visitable position on the map
                         if closed[x2][y2] == 0 and self.map_grid[x2][y2] == 0:
+                            # Compose the projected: actual accumulated cost + action cost + heuristic cost at given position
                             v2 = v + self.action_cost[a] + heuristic[x2][y2]
                             possible_next_coords.append(
                                 [v2, x2, y2, o2, a, None,self.state_])
@@ -318,8 +321,9 @@ class CoveragePlanner():
                         x2 = x + self.movement[i][0]
                         y2 = y + self.movement[i][1]
 
-                        # Check if it is out of bounds or already visited
+                        # Check if it is out of the map boundaries
                         if x2 >= 0 and x2 < len(self.map_grid) and y2 >= 0 and y2 < len(self.map_grid[0]):
+                            # Check if this position was already visited or if it is a visitable position on the map
                             if closed[x2][y2] == 0 and self.map_grid[x2][y2] == 0:
                                 g2 = g + self.a_star_movement_cost[i]
                                 f = g2 + heuristic[x2][y2]
