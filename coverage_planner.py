@@ -169,7 +169,7 @@ class CoveragePlanner():
         v = 0
 
         # Fill the initial coord in the iteration list
-        trajectory = [[v, x, y, o, None, None,self.state_]]
+        trajectory = [[v, x, y, o, None, None, self.state_]]
 
         complete_coverage = False
         resign = False
@@ -203,7 +203,7 @@ class CoveragePlanner():
                             # Compose the projected: actual accumulated cost + action cost + heuristic cost at given position
                             v2 = v + self.action_cost[a] + heuristic[x2][y2]
                             possible_next_coords.append(
-                                [v2, x2, y2, o2, a, None,self.state_])
+                                [v2, x2, y2, o2, a, None, self.state_])
 
                 # If there isn any possible next position, stop searching
                 if len(possible_next_coords) == 0:
@@ -255,7 +255,7 @@ class CoveragePlanner():
     # Find the shortest path between init and goal coords based on the A* Search algorithm
     def a_star_search_closest_unvisited(self, initial_pos, heuristic):
 
-        # Create a reference grid for visited coords
+        # Create a reference grid for visited positions
         closed = np.zeros_like(self.map_grid)
         closed[initial_pos[0]][initial_pos[1]] = 1
 
@@ -264,26 +264,23 @@ class CoveragePlanner():
                         "initial closed grid:", 2)
             print(closed)
 
-        expand = np.full((np.size(self.map_grid, 0),
-                         np.size(self.map_grid, 1)), -1)
+        # Movement orientation at the A* visited positions
         orientation = np.full(
             (np.size(self.map_grid, 0), np.size(self.map_grid, 1)), -1)
 
+        # Added the given A* initial position with its associated costs to the "open" list
+        # "open" is a list of valid positions to expand: [[f, g, x, y]]
+        # g: accumulated a* movement_cost (start it with 0 cost)
+        # f: total cost = a*_movement_cost + heuristic_cost at given position
+        # x,y: given position
         x = initial_pos[0]
         y = initial_pos[1]
-        o = initial_pos[2]
         g = 0
         f = g + heuristic[x][y]
-
-        # list of valid positions to expand: [[f,count, x, y]]
         open = [[f, g, x, y]]
 
         found = False  # Whether a unvisited position is found or not
         resign = False  # flag set if we can't find expand
-        count = 0
-
-        x2 = initial_pos[0]
-        y2 = initial_pos[1]
 
         while not found and not resign:
             self.printd("a_star_search_closest_unvisited",
@@ -303,67 +300,66 @@ class CoveragePlanner():
                 open.reverse()
                 next = open.pop()
 
-                # update current search x,y,g and set
+                # update current search x,y,g
                 x = next[2]
                 y = next[3]
                 g = next[1]
-                expand[x][y] = count
-                count += 1
 
-                # Check if a unvisited position is found
+                # Check if a unvisited position was found
                 if self.coverage_grid[x][y] == 0:
                     found = True
-                    x2 = x
-                    y2 = y
                 else:
                     # calculate the possible next coords
                     for i in range(len(self.movement)):
-                        x2 = x + self.movement[i][0]
-                        y2 = y + self.movement[i][1]
+                        x_next = x + self.movement[i][0]
+                        y_next = y + self.movement[i][1]
 
                         # Check if it is out of the map boundaries
-                        if x2 >= 0 and x2 < len(self.map_grid) and y2 >= 0 and y2 < len(self.map_grid[0]):
+                        if x_next >= 0 and x_next < len(self.map_grid) and y_next >= 0 and y_next < len(self.map_grid[0]):
                             # Check if this position was already visited or if it is a visitable position on the map
-                            if closed[x2][y2] == 0 and self.map_grid[x2][y2] == 0:
+                            if closed[x_next][y_next] == 0 and self.map_grid[x_next][y_next] == 0:
                                 g2 = g + self.a_star_movement_cost[i]
-                                f = g2 + heuristic[x2][y2]
-                                open.append([f, g2, x2, y2])
-                                closed[x2][y2] = 1
-                                orientation[x2][y2] = i
+                                f = g2 + heuristic[x_next][y_next]
+                                open.append([f, g2, x_next, y_next])
+                                closed[x_next][y_next] = 1
+                                orientation[x_next][y_next] = i
 
-        # initialize the trajector and total cost
+        # initialize the trajectory
         trajectory = []
-        total_cost = 0
 
-        # If path was found, then build the trajectory
+        # If path was found, then build the trajectory.
+        # x and y at this point represents the last position on the search, which is the unvisited position
         if found:
 
-            # x2 and y2 are the unvisited position
-            x = x2
-            y = y2
+            # Add the last position to the trajectory list, with both actions as None (they will be set later)
+            trajectory = [
+                [0, x, y, orientation[x][y], None, None, self.state_]]
 
-            trajectory = [[0, x, y, orientation[x][y], None, None, self.state_]]
+            # Add the initial orientation to the orientation matrix
             orientation[initial_pos[0]][initial_pos[1]] = initial_pos[2]
 
             # Go backwards from the unvisited position founded to this search inital position
+            # the 0 postfix means that this variable referes to the predecessor position, as 
+            # this process below starts from the final position to the start position of the A*
             while (x != initial_pos[0] or y != initial_pos[1]):
                 # Calculate the path predecessor position
                 x0 = x - self.movement[orientation[x][y]][0]
                 y0 = y - self.movement[orientation[x][y]][1]
+                # The predecessor orientation is the one on the orientation matrix
                 o0 = orientation[x0][y0]
+                # The predecessor action will be set in the next iteration (its the next action of one position before it)
                 a0 = None
 
                 # Compute the required action index to get from the predecessor position to current iteration position
                 a = (trajectory[-1][3]-o0 + 1) % len(self.action)
 
-                # Update the successor position "action_performed_to_get_here"
+                # Update the successor position "action_performed_to_get_here" with the current next_action
                 trajectory[-1][4] = a
 
-                # Add the path predecessor position
+                # Add the predecessor position and actions to the trajectory list
                 trajectory.append([0, x0, y0, o0, a0, a, self.state_])
-                # trajectory.append([0, x0, y0, o0, a0, a, self.action_name[a], self.movement_name[orientation[x][y]]])
 
-                # update x and y for next iteration
+                # update x and y with the predecessor position, for next iteration
                 x = x0
                 y = y0
 
@@ -530,7 +526,7 @@ class CoveragePlanner():
             "l_cost", "x", "y", "orient.", "act_in", "act_next"))
         for t in trajectory:
             print("{:.2f}\t{}\t{}\t{}\t{}\t{}\t{}".format(
-                t[0], t[1], t[2], t[3], t[4], t[5],t[6].name))
+                t[0], t[1], t[2], t[3], t[4], t[5], t[6].name))
 
     # Print a given map grid with regular column width
     def print_map(self, m):
